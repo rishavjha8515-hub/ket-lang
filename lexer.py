@@ -1,0 +1,78 @@
+KEYWORDS = {"let", "coin"}
+
+
+class Token:
+    def __init__(self, type, value):
+        self.type = type
+        self.value = value
+
+    def __repr__(self):
+        return f"Token({self.type}, {self.value})"
+
+SYMBOLS = {
+    "=": "EQUALS",
+    "|": "PIPE",
+    "+": "PLUS",
+    "-": "MINUS",
+    "*": "STAR",
+    "/": "SLASH",
+    "(": "LPAREN",
+    ")": "RPAREN",
+    ",": "COMMA",
+}
+
+class Lexer:
+    def __init__(self, text):
+        self.text = text
+        self.pos = 0
+
+    def current(self):
+        if self.pos < len(self.text):
+            return self.text[self.pos]
+        return None
+
+    def advance(self):
+        self.pos += 1
+
+    def skip_whitespace(self):
+        while self.current() is not None and self.current() == " ":
+            self.advance()
+
+    def read_number(self):
+        digits = ""
+        while self.current() is not None and self.current().isdigit():
+            digits += self.current()
+            self.advance()
+        return int(digits)
+
+    def read_word(self):
+        word = ""
+        while self.current() is not None and (self.current().isalnum() or self.current() == "_"):
+            word += self.current()
+            self.advance()
+        return word
+
+    def next_token(self):
+        self.skip_whitespace()
+        ch = self.current()
+
+        if ch is None:
+            return Token("EOF", None)
+
+        if ch.isdigit():
+            return Token("NUMBER", self.read_number())
+
+        if ch.isalpha() or ch == "_":
+            word = self.read_word()
+            if word in KEYWORDS:
+                return Token(word.upper(), word)
+            return Token("IDENT", word)
+
+        if ch in SYMBOLS:
+            self.advance()
+            return Token(SYMBOLS[ch], ch)
+
+        raise Exception(f"Unknown character: {ch}")
+
+
+
