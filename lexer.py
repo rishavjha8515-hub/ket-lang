@@ -34,7 +34,7 @@ class Lexer:
         self.pos += 1
 
     def skip_whitespace(self):
-        while self.current() is not None and self.current() == " ":
+        while self.current() is not None and self.current() in  " \t\r\n":
             self.advance()
 
     def read_number(self):
@@ -74,15 +74,27 @@ class Lexer:
             self.advance()
             return Token(SYMBOLS[ch], ch)
 
-        raise Exception(f"Unknown character: {ch}")
+        raise Exception(f"Unknown character: {ch!r}")
 
     def read_string(self):
         self.advance()
         text = ""
-        while self.current() is not None and self.current() != '"':
+        while self.current() is not None and self.current() !='"':
             text += self.current()
             self.advance()
         self.advance()
         return text
 
+    def tokenize(self):
+        tokens = []
+        tok = self.next_token()
+        while tok.type != "EOF":
+            tokens.append(tok)
+            tok = self.next_token()
+        tokens.append(tok)
+        return tokens
+
+if __name__  == "__main__":
+    lx = LEXER('let coin = 0 | 1\nsay "hi"')
+    print(lx.toxenize())
 
