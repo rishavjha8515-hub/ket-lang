@@ -1,5 +1,4 @@
-KEYWORDS = {"let", "coin"}
-
+KEYWORDS = {"let", "say"}
 
 class Token:
     def __init__(self, type, value):
@@ -68,11 +67,22 @@ class Lexer:
                 return Token(word.upper(), word)
             return Token("IDENT", word)
 
+        if ch == '"':
+            return Token("STRING", self.read_string())
+
         if ch in SYMBOLS:
             self.advance()
             return Token(SYMBOLS[ch], ch)
 
         raise Exception(f"Unknown character: {ch}")
 
+    def read_string(self):
+        self.advance()
+        text = ""
+        while self.current() is not None and self.current() != '"':
+            text += self.current()
+            self.advance()
+        self.advance()
+        return text
 
 
