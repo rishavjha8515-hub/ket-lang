@@ -8,3 +8,6 @@ let x = 10
 say x * 2 - 4
 say (1 + 2 ) * 3
 say (10 - 4) / 2
+tunnel 4 through 5 wide 1
+tunnel 9 through 5 wide 1
+tunnel 1 through 5 wide 3

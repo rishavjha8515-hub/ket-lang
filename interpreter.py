@@ -1,5 +1,6 @@
 import random
-from parser import Number, String, Var, Superposition, Let, Say, BinOp
+import math
+from parser import Number, String, Var, Superposition, Let, Say, BinOp, Tunnel
 
 class Interpreter:
     def __init__(self):
@@ -46,6 +47,21 @@ class Interpreter:
         elif isinstance(stmt, Say):
             value = self.collapse(self.evaluate(stmt.value))
             print(value)
+        elif isinstance(stmt, Tunnel):
+            energy = self.evaluate(stmt.energy)
+            height = self.evaluate(stmt.height)
+            width = self.evaluate(stmt.width)
+
+            if energy >= height:
+                chance = 1.0
+            else:
+                kappa = math.sqrt(height - energy)
+                chance = math.exp(-2 * kappa * width)
+
+            if random.random() < chance:
+                print(f"Tunneled through! ({chance:.1%} chance)")
+            else:
+                print(f"Reflected. ({chance:.1%}, chance)")
         else:
             raise Exception(f"Cannot execute: {stmt}")
 
