@@ -52,13 +52,14 @@ class BinOp:
     def __repr__(self):
         return f"BinOp({self.left} {self.op} {self.right})"
 class Tunnel:
-    def __init__(self, energy, height, width):
+    def __init__(self, energy, height, width, observed=False):
         self.energy = energy
         self.height = height
         self.width = width
+        self.observed = observed
 
     def __repr__(self):
-        return f"Tunnel({self.energy}, {self.height}, {self.width})"
+        return f"Tunnel({self.energy}, {self.height}, {self.width}, observed={self.observed})"
     
 class Parser:
     def __init__(self, tokens):
@@ -159,6 +160,14 @@ class Parser:
             self.expect("WIDE")
             width = self.parse_arith()
             return Tunnel(energy, height, width)
+
+        if tok.type == "OBSERVE":
+            self.advance()
+            stmt = self.parse_statement()
+            if not isinstance(stmt, Tunnel):
+                raise Exception("observe can only used with tunnel")
+            stmt.observed = True
+            return stmt
         
         raise Exception(f"Unexpected statement start: {tok}")
 
@@ -169,5 +178,5 @@ class Parser:
         return statements
 
 if __name__ == "__main__":
-    tokens = Lexer("tunnel 3 through 5 wide 2").tokenize()
+    tokens = Lexer(" observe tunnel 3 through 5 wide 2").tokenize()
     print(Parser(tokens).parse_program())

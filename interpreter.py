@@ -58,10 +58,12 @@ class Interpreter:
                 kappa = math.sqrt(height - energy)
                 chance = math.exp(-2 * kappa * width)
 
-            if random.random() < chance:
+            if stmt.observed:
+                print(f"Observed! Odds were {chance:.1%}, but watching collasped it.Reflected")
+            elif random.random() < chance:
                 print(f"Tunneled through! ({chance:.1%} chance)")
             else:
-                print(f"Reflected. ({chance:.1%}, chance)")
+                print(f"Reflected. ({chance:.1%}, chance)") #traded logic from stardance project
         else:
             raise Exception(f"Cannot execute: {stmt}")
 
