@@ -36,6 +36,6 @@ class Interpreter:
         else:
             raise Exception(f"Cannot execute: {stmt}")
 
-def run(self, program)
-    for stmt in program:
-        self.execute(stmt)
+    def run(self, program):
+        for stmt in program:
+            self.execute(stmt)

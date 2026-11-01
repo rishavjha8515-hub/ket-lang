@@ -1,0 +1,5 @@
+let coin = 0|1
+say "Flipping..."
+say coin
+say coin
+say coin

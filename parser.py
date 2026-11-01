@@ -43,6 +43,15 @@ class Say:
     def __repr__(self):
         return f"Say({self.value})"
 
+class BinOp:
+    def __init__(self, left, op, right):
+        self.left = left
+        self.op = op
+        self.right = right
+
+    def __repr__(self):
+        return f"BinOp({self.left} {self.op} {self.right})"
+
 class Parser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -77,8 +86,29 @@ class Parser:
             return Var(tok.value)
 
         raise Exception(f"Unexpected token: {tok}")
-    
 
+    def parse_term(self):
+        left = self.parse_primary()
+
+        while self.current().type in ("STAR", "SLASH"):
+            op = self.current().value
+            self.advance()
+            right = self.parse_primary()
+            left = BinOp(left, op, right)
+
+        return left
+
+    def parse_arith(self):
+        left = self.parse_term()
+
+        while self.current().type in ("PLUS", "MINUS"):
+            op = self.current().value
+            self.advance()
+            right = self.parse_term()
+            left = BinOp(left, op, right)
+
+        return left
+    
     def parse_expression(self):
         first = self.parse_primary()
 
@@ -116,5 +146,5 @@ class Parser:
         return statements
 
 if __name__ == "__main__":
-    tokens = Lexer('let coin = 0 | 1\n say coin').tokenize()
-    print(Parser(tokens).parse_program())
+    tokens = Lexer("1  + 2 * 3").tokenize()
+    print(Parser(tokens).parse_arith())
