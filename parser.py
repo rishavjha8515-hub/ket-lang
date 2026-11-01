@@ -110,7 +110,7 @@ class Parser:
         return left
     
     def parse_expression(self):
-        first = self.parse_primary()
+        first = self.parse_arith()
 
         if self.current().type != "PIPE":
             return first
@@ -118,7 +118,7 @@ class Parser:
         options = [first]
         while self.current().type == "PIPE":
             self.advance()
-            options.append(self.parse_primary())
+            options.append(self.parse_arith())
 
         return Superposition(options)
 

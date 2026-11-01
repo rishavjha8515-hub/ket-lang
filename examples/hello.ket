@@ -3,3 +3,6 @@ say "Flipping..."
 say coin
 say coin
 say coin
+say 1 + 2 * 3
+let x = 10
+say x * 2 - 4

@@ -1,5 +1,5 @@
 import random
-from parser import Number, String, Var, Superposition, Let, Say
+from parser import Number, String, Var, Superposition, Let, Say, BinOp
 
 class Interpreter:
     def __init__(self):
@@ -24,6 +24,19 @@ class Interpreter:
             self.vars[node.name] = value
             return value
 
+        if isinstance(node, BinOp):
+            left = self.evaluate(node.left)
+            right = self.evaluate(node.right)
+
+            if node.op == "+":
+                return left + right
+            if node.op == "-":
+                return left - right
+            if node.op == "*":
+                return left * right
+            if node.op == "/":
+                return left / right
+            
         raise Exception(f"Cannot evaluate: {node}")
 
     def execute(self, stmt):
