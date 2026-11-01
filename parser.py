@@ -85,6 +85,12 @@ class Parser:
             self.advance()
             return Var(tok.value)
 
+        if tok.type == "LPAREN":
+            self.advance()
+            expr = self.parse_expression()
+            self.expect("RPAREN")
+            return expr
+        
         raise Exception(f"Unexpected token: {tok}")
 
     def parse_term(self):
