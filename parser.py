@@ -67,6 +67,14 @@ class Passport:
 
     def __repr__(self):
         return f"Passport({self.name})"
+
+class Entangle:
+    def __init__(self, first, second):
+        self.first = first
+        self.second = second
+
+    def __repr__(self):
+        return f"Entangle({self.first}, {self.second})"
         
 class Parser:
     def __init__(self, tokens):
@@ -180,6 +188,13 @@ class Parser:
             self.advance()
             name = self.expect("IDENT").value
             return Passport(name)
+
+        if tok.type == "ENTANGLE":
+            self.advance()
+            first = self.expect("IDENT").value
+            self.expect("COMMA")
+            second = self.expect("IDENT").value
+            return Entangle(first, second)
         
         raise Exception(f"Unexpected statement start: {tok}")
 
@@ -190,5 +205,5 @@ class Parser:
         return statements
 
 if __name__ == "__main__":
-    tokens = Lexer("passport coin").tokenize()
+    tokens = Lexer("entangle a, b").tokenize()
     print(Parser(tokens).parse_program())

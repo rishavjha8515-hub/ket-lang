@@ -1,16 +1,34 @@
 import random
 import math
-from parser import Number, String, Var, Superposition, Let, Say, BinOp, Tunnel, Passport
+from parser import Number, String, Var, Superposition, Let, Say, BinOp, Tunnel, Passport, Entangle
 
 class Interpreter:
     def __init__(self):
         self.vars = {}
+        self.links = {}
 
     def collapse(self, value):
         if isinstance(value, Superposition):
             return random.choice([self.evaluate(o) for o in value.options])
         return value
 
+    def collapse_var(self, name):
+        value = self.vars[name]
+        if not isinstance(value, Superposition):
+            return value
+
+        index = random.randrange(len(value.options))
+        result = self.evaluate(value.options[index])
+        self.vars[name] = result
+
+        partner = self.links.get(name)
+        if partner is not None:
+            other = self.vars[partner]
+            if isinstance(other, Superposition):
+                self.vars[partner] = self.evaluate(other.options[index])
+
+        return result
+    
     def evaluate(self, node):
         if isinstance(node, (Number, String)):
             return node.value
@@ -21,9 +39,7 @@ class Interpreter:
         if isinstance(node, Var):
             if node.name not in self.vars:
                 raise Exception(f"Unknown variable: {node.name}")
-            value = self.collapse(self.vars[node.name])
-            self.vars[node.name] = value
-            return value
+            return self.collapse_var(node.name)
 
         if isinstance(node, BinOp):
             left = self.evaluate(node.left)
@@ -59,7 +75,7 @@ class Interpreter:
                 chance = math.exp(-2 * kappa * width)
 
             if stmt.observed:
-                print(f"Observed! Odds were {chance:.1%}, but watching collasped it. Reflected.")
+                print(f"Observed! Odds were {chance:.1%}, but watching collapsed it. Reflected.")
             elif random.random() < chance:
                 print(f"Tunneled through! ({chance:.1%} chance)")
             else:
@@ -78,6 +94,20 @@ class Interpreter:
             else:
                 print("State: collapsed")
                 print(f"Value: {value}")
+        elif isinstance(stmt, Entangle):
+            for name in (stmt.first, stmt.second):
+                if name not in self.vars:
+                    raise Exception(f"Unknown variable: {name}")
+                if not isinstance(self.vars[name], Superposition):
+                    raise Exception(f"{name} is already collapsed, cannot entangle")
+
+            a = self.vars[stmt.first]
+            b = self.vars[stmt.second]
+            if len(a.options) != len(b.options):
+                raise Exception("Entangled variables need the same number of options")
+
+            self.links[stmt.first] = stmt.second
+            self.links[stmt.second] = stmt.first
         else:
             raise Exception(f"Cannot execute: {stmt}")
 

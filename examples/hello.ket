@@ -17,3 +17,8 @@ let spin = 0 | 1
 passport spin
 say spin
 passport spin
+let a = 0 | 1
+let b = 10 | 20
+entangle a, b
+say a
+say b
