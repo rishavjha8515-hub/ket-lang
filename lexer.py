@@ -1,4 +1,4 @@
-KEYWORDS = {"let", "say", "tunnel", "through", "wide", "observe"}
+KEYWORDS = {"let", "say", "tunnel", "through", "wide", "observe", "passport"}
 
 class Token:
     def __init__(self, type, value):

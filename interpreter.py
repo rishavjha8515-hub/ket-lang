@@ -1,6 +1,6 @@
 import random
 import math
-from parser import Number, String, Var, Superposition, Let, Say, BinOp, Tunnel
+from parser import Number, String, Var, Superposition, Let, Say, BinOp, Tunnel, Passport
 
 class Interpreter:
     def __init__(self):
@@ -59,11 +59,25 @@ class Interpreter:
                 chance = math.exp(-2 * kappa * width)
 
             if stmt.observed:
-                print(f"Observed! Odds were {chance:.1%}, but watching collasped it. Reflected")
+                print(f"Observed! Odds were {chance:.1%}, but watching collasped it. Reflected.")
             elif random.random() < chance:
                 print(f"Tunneled through! ({chance:.1%} chance)")
             else:
                 print(f"Reflected. ({chance:.1%} chance)") #traded logic from stardance project
+        elif isinstance(stmt, Passport):
+            if stmt.name not in self.vars:
+                raise Exception(f"Unknown variable: {stmt.name}")
+
+            value = self.vars[stmt.name]
+            print("--- KET PASSPORT ---")
+            print(f"Name: {stmt.name}")
+
+            if isinstance(value, Superposition):
+                print("State: superposition")
+                print(f"Could be {len(value.options)} values")
+            else:
+                print("State: collapsed")
+                print(f"Value: {value}")
         else:
             raise Exception(f"Cannot execute: {stmt}")
 

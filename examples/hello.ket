@@ -13,3 +13,7 @@ tunnel 9 through 5 wide 1
 tunnel 1 through 5 wide 3
 observe tunnel 9 through 5 wide 1
 observe tunnel 4 through 5 wide 1
+let spin = 0 | 1
+passport spin
+say spin
+passport spin

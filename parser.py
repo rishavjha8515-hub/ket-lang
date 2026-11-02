@@ -60,7 +60,14 @@ class Tunnel:
 
     def __repr__(self):
         return f"Tunnel({self.energy}, {self.height}, {self.width}, observed={self.observed})"
-    
+
+class Passport:
+    def __init__(self, name):
+        self.name = name
+
+    def __repr__(self):
+        return f"Passport({self.name})"
+        
 class Parser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -168,6 +175,11 @@ class Parser:
                 raise Exception("observe can only used with tunnel")
             stmt.observed = True
             return stmt
+
+        if tok.type == "PASSPORT":
+            self.advance()
+            name = self.expect("IDENT").value
+            return Passport(name)
         
         raise Exception(f"Unexpected statement start: {tok}")
 
@@ -178,5 +190,5 @@ class Parser:
         return statements
 
 if __name__ == "__main__":
-    tokens = Lexer(" observe tunnel 3 through 5 wide 2").tokenize()
+    tokens = Lexer("passport coin").tokenize()
     print(Parser(tokens).parse_program())
