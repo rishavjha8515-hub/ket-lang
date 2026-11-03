@@ -1,11 +1,13 @@
 import random
 import math
 from parser import Number, String, Var, Superposition, Let, Say, BinOp, Tunnel, Passport, Entangle
+from mini_me import mini_me
 
 class Interpreter:
     def __init__(self):
         self.vars = {}
         self.links = {}
+        self.just_collapsed = False
 
     def collapse(self, value):
         if isinstance(value, Superposition):
@@ -18,6 +20,7 @@ class Interpreter:
             return value
 
         index = random.randrange(len(value.options))
+        self.just_collapsed = True
         result = self.evaluate(value.options[index])
         self.vars[name] = result
 
@@ -61,8 +64,12 @@ class Interpreter:
             self.vars[stmt.name] = self.evaluate(stmt.value)
 
         elif isinstance(stmt, Say):
+            self.just_collapsed = False
             value = self.collapse(self.evaluate(stmt.value))
             print(value)
+            if self.just_collapsed:
+                print(mini_me("collapsed", value=value))
+
         elif isinstance(stmt, Tunnel):
             energy = self.evaluate(stmt.energy)
             height = self.evaluate(stmt.height)
@@ -76,10 +83,13 @@ class Interpreter:
 
             if stmt.observed:
                 print(f"Observed! Odds were {chance:.1%}, but watching collapsed it. Reflected.")
+                print(mini_me("observed"))
             elif random.random() < chance:
                 print(f"Tunneled through! ({chance:.1%} chance)")
+                print(mini_me("tunnel_pass"))
             else:
                 print(f"Reflected. ({chance:.1%} chance)") #traded logic from stardance project
+                print(mini_me("tunnel_fail"))
         elif isinstance(stmt, Passport):
             if stmt.name not in self.vars:
                 raise Exception(f"Unknown variable: {stmt.name}")
