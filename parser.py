@@ -75,6 +75,14 @@ class Entangle:
 
     def __repr__(self):
         return f"Entangle({self.first}, {self.second})"
+
+class Hold:
+    def __init__(self, name, seconds):
+        self.name = name
+        self.seconds = seconds
+
+    def __repr__(self):
+        return f"Hold({self.name}, {self.seconds})"
         
 class Parser:
     def __init__(self, tokens):
@@ -195,6 +203,13 @@ class Parser:
             self.expect("COMMA")
             second = self.expect("IDENT").value
             return Entangle(first, second)
+
+        if tok.type =="HOLD":
+            self.advance()
+            name = self.expect("IDENT").value
+            self.expect("FOR")
+            seconds = self.parse_arith()
+            return Hold(name, seconds)
         
         raise Exception(f"Unexpected statement start: {tok}")
 
@@ -205,5 +220,5 @@ class Parser:
         return statements
 
 if __name__ == "__main__":
-    tokens = Lexer("entangle a, b").tokenize()
+    tokens = Lexer("hold coin for 5").tokenize()
     print(Parser(tokens).parse_program())

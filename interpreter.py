@@ -1,7 +1,9 @@
 import random
 import math
-from parser import Number, String, Var, Superposition, Let, Say, BinOp, Tunnel, Passport, Entangle
+from parser import Number, String, Var, Superposition, Let, Say, BinOp, Tunnel, Passport, Entangle, Hold
 from mini_me import mini_me
+
+COHERENCE_TIME = 5
 
 class Interpreter:
     def __init__(self):
@@ -97,6 +99,7 @@ class Interpreter:
             value = self.vars[stmt.name]
             print("--- KET PASSPORT ---")
             print(f"Name: {stmt.name}")
+            print(mini_me("passport"))
 
             if isinstance(value, Superposition):
                 print("State: superposition")
@@ -118,6 +121,25 @@ class Interpreter:
 
             self.links[stmt.first] = stmt.second
             self.links[stmt.second] = stmt.first
+            print(mini_me("entangled"))
+
+        elif isinstance(stmt, Hold):
+            if stmt.name not in self.vars:
+                raise Exception(f"Unknown variable: {stmt.name}")
+
+            seconds = self.evaluate(stmt.seconds)
+            value = self.vars[stmt.name]
+
+            if not isinstance(value, Superposition):
+                print(f"{stmt.name} is already collapsed, nothing to hold.")
+            else:
+                chance = 1 - math.exp(-seconds / COHERENCE_TIME)
+                if random.random() < chance:
+                    result = self.collapse_var(stmt.name)
+                    print(f"Decohered after {seconds}s! {stmt.name} collapsed to {result} on its own. ({chance:.1%} chance)")
+                    print(mini_me("decohered"))
+                else:
+                    print(f"{stmt.name} stayed coherent for {seconds}s. ({chance:.1%} chance of decoherence)")
         else:
             raise Exception(f"Cannot execute: {stmt}")
 

@@ -22,3 +22,8 @@ let b = 10 | 20
 entangle a, b
 say a
 say b
+let qbit = 0 | 1
+hold qbit for 1
+passport qbit
+hold qbit for 20
+passport qbit
